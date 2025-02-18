@@ -9,8 +9,12 @@
 <body>
   <div class="container">
   <h1>黑名单设置</h1>
-    <p>每行输入一个网址，支持通配符（如 *.example.com）</p>
-    <textarea id="blacklist" rows="10" placeholder="输入要屏蔽的网址..."></textarea>
+  <p>每行输入一个正则表达式，如：</p>
+  <ul>
+    <li>example\.com$ - 匹配 example.com</li>
+    <li>.*\.example\.com$ - 匹配所有 example.com 的子域名</li>
+  </ul>
+  <textarea id="blacklist" rows="10" placeholder="输入正则表达式..."></textarea>
     <div class="button-container">
   <button id="save">保存</button>
     </div>

@@ -299,27 +299,18 @@ function isUrlInBlacklist(url, blacklist) {
     console.log('检查域名:', hostname);
 
     for (const pattern of blacklist) {
-      console.log('对比模式:', pattern);
+      console.log('对比正则:', pattern);
       
-      // 将通配符模式转换为正则表达式
-      let regexPattern = pattern
-        .replace(/\./g, '\\.')  // 转义点号
-        .replace(/\*/g, '.*');  // 将星号转换为正则通配符
-      
-      // 如果模式以 *. 开头，允许匹配顶级域名
-      if (pattern.startsWith('*.')) {
-        regexPattern = `(^|\\.)${regexPattern.slice(2)}$`;
-    } else {
-        regexPattern = `^${regexPattern}$`;
-      }
-      
-      const regex = new RegExp(regexPattern);
+      try {
+        const regex = new RegExp(pattern);
       const matches = regex.test(hostname);
-      console.log('正则表达式:', regex);
-      console.log('是否匹配:', matches);
-      
+        console.log('是否匹配:', matches);
       if (matches) return true;
+      } catch (regexError) {
+        console.error('无效的正则表达式:', pattern, regexError);
+        continue;
   }
+    }
     
     return false;
   } catch (e) {

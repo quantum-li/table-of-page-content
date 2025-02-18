@@ -24,12 +24,15 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     
     chrome.storage.sync.get('blacklist', (data) => {
       const blacklist = data.blacklist || [];
-      const newEntries = [`*.${rootDomain}`, rootDomain];
-      
+      // 创建两个正则表达式：一个匹配域名本身，一个匹配所有子域名
+      const newEntries = [
+        `${escapeRegExp(rootDomain)}$`,
+        `.*\\.${escapeRegExp(rootDomain)}$`
+      ];
       const updatedBlacklist = [...new Set([...blacklist, ...newEntries])];
       chrome.storage.sync.set({ blacklist: updatedBlacklist }, () => {
           sendMessageToTab(tab.id, {action: "updateBlacklist"});
-        console.log(`已将 ${rootDomain} 及其子域名添加到黑名单`);
+        console.log(`已将 ${rootDomain} 的正则表达式添加到黑名单`);
         });
     });
   }
@@ -62,4 +65,9 @@ function extractRootDomain(domain) {
     return parts.slice(-2).join('.');
   }
   return domain;
+}
+
+// 添加辅助函数用于转义正则表达式特殊字符
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

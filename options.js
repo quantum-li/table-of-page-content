@@ -9,28 +9,32 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   saveButton.addEventListener('click', () => {
-    const blacklist = blacklistTextarea.value
+    const patterns = blacklistTextarea.value
       .split('\n')
-      .map(url => url.trim())
-      .filter(url => url !== '')
-      .map(url => {
-        // 只处理完整 URL 的情况
-        if (url.startsWith('http://') || url.startsWith('https://')) {
-          return '*.' + new URL(url).hostname;
-        }
-        // 其他情况保持原样
-        return url;
-      });
+      .map(pattern => pattern.trim())
+      .filter(pattern => pattern !== '');
 
-    console.log('保存黑名单:', blacklist);
-    
-    chrome.storage.sync.set({ blacklist }, () => {
-      console.log('黑名单已保存');
-      // 立即读取并验证
-      chrome.storage.sync.get('blacklist', (data) => {
-        console.log('验证已保存的黑名单:', data.blacklist);
-      });
+    // 验证所有正则表达式的有效性
+    const validPatterns = patterns.filter(pattern => {
+      try {
+        new RegExp(pattern);
+        return true;
+      } catch (e) {
+        console.error('无效的正则表达式:', pattern, e);
+        return false;
+      }
+    });
+
+    if (validPatterns.length !== patterns.length) {
+      statusElement.textContent = '存在无效的正则表达式，已自动过滤';
+      statusElement.style.color = '#ff6b6b';
+    } else {
       statusElement.textContent = '设置已保存';
+      statusElement.style.color = '#27ae60';
+    }
+      
+    chrome.storage.sync.set({ blacklist: validPatterns }, () => {
+      console.log('黑名单已保存:', validPatterns);
       statusElement.style.opacity = '1';
       
       setTimeout(() => {
