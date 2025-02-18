@@ -1,3 +1,6 @@
+// 在文件最顶部添加变量声明
+let tocClosed = false;
+
 function waitForElement(selector, root, timeout = 2000) {
   return new Promise((resolve) => {
     if (root.querySelector(selector)) {
@@ -84,6 +87,12 @@ async function createTOC() {
     return;
   }
 
+  // 再次检查是否在黑名单中
+  const shouldCreateTOC = await checkAndInitTOC();
+  if (!shouldCreateTOC) {
+      return;
+    }
+    
   const toc = document.createElement('div');
   toc.className = 'page-toc';
   toc.style.display = 'none'; // 初始设置为隐藏
@@ -119,7 +128,7 @@ async function createTOC() {
   if (!headings || headings.length === 0) {
       return;
     }
-    
+
   const ul = document.createElement('ul');
   const addedHeadings = new Set(); // 用于跟踪已添加的标题
   
@@ -131,7 +140,7 @@ async function createTOC() {
     if (!headingText.trim()) {
       return;
     }
-
+    
     // 创建唯一标识符
     const headingIdentifier = headingText + '-' + heading.tagName;
     
@@ -240,9 +249,9 @@ function debounce(func, wait) {
   };
 }
 
-// 修改 MutationObserver 逻辑
+// MutationObserver 逻辑
 const observer = new MutationObserver(debounce(async (mutations) => {
-  if (tocClosed) return; // 如果目录已关闭，直接返回
+  if (tocClosed) return; // 现在可以正确访问 tocClosed 变量
 
     const toc = document.querySelector('.page-toc');
   const hasNewContent = mutations.some(mutation => {
@@ -261,7 +270,7 @@ const observer = new MutationObserver(debounce(async (mutations) => {
     }
     await createTOC();
   }
-}, 500)); // 500ms 的防抖延迟
+}, 500));
 // 配置观察选项，观察整个文档
 observer.observe(document, {
   childList: true,
@@ -271,28 +280,111 @@ observer.observe(document, {
 });
 
 function isUrlInBlacklist(url, blacklist) {
-  return blacklist.some(pattern => {
-    const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
-    return regex.test(url);
-  });
+  try {
+  const hostname = new URL(url).hostname;
+    console.log('检查域名:', hostname);
+
+    for (const pattern of blacklist) {
+      console.log('对比模式:', pattern);
+      
+      // 将通配符模式转换为正则表达式
+      let regexPattern = pattern
+        .replace(/\./g, '\\.')  // 转义点号
+        .replace(/\*/g, '.*');  // 将星号转换为正则通配符
+      
+      // 如果模式以 *. 开头，允许匹配顶级域名
+      if (pattern.startsWith('*.')) {
+        regexPattern = `(^|\\.)${regexPattern.slice(2)}$`;
+    } else {
+        regexPattern = `^${regexPattern}$`;
+      }
+      
+      const regex = new RegExp(regexPattern);
+      const matches = regex.test(hostname);
+      console.log('正则表达式:', regex);
+      console.log('是否匹配:', matches);
+      
+      if (matches) return true;
+  }
+    
+    return false;
+  } catch (e) {
+    console.error('URL检查出错:', e);
+    return false;
+}
 }
 
+// 将黑名单检查移到函数中
+function checkAndInitTOC() {
+  console.log('=== 开始检查黑名单 ===');
+  return new Promise((resolve) => {
 chrome.storage.sync.get('blacklist', (data) => {
   const blacklist = data.blacklist || [];
   const currentUrl = window.location.href;
+    const hostname = new URL(currentUrl).hostname;
   
-  if (!isUrlInBlacklist(currentUrl, blacklist)) {
-  initTOC();
+    console.log('当前网址:', currentUrl);
+    console.log('当前域名:', hostname);
+    console.log('黑名单列表:', blacklist);
+    
+    const isBlocked = isUrlInBlacklist(currentUrl, blacklist);
+    console.log('是否在黑名单中:', isBlocked);
+    
+    if (!isBlocked) {
+      console.log('网站未被屏蔽，创建目录');
+        resolve(true);
+    } else {
+      console.log('网站已被屏蔽，不创建目录');
+      // 确保移除已存在的目录
+      const existingToc = document.querySelector('.page-toc');
+      if (existingToc) {
+        existingToc.remove();
+  }
+        resolve(false);
 }
 });
+  });
+}
 
-let tocClosed = false; // 添加一个标志来跟踪目录是否被关闭
+// 将消息监听器移到文档加载完成后
+document.addEventListener('DOMContentLoaded', async () => {
+  console.log('页面加载完成，执行检查');
+  const shouldInitTOC = await checkAndInitTOC();
+  if (shouldInitTOC) {
+    initTOC();
+  }
+  });
 
+// 也可以考虑在 window.onload 事件中再次检查
+window.addEventListener('load', async () => {
+  console.log('页面完全加载，再次执行检查');
+  const shouldInitTOC = await checkAndInitTOC();
+  if (shouldInitTOC) {
+    initTOC();
+  }
+  });
+
+// 监听存储变化
+chrome.storage.onChanged.addListener(async (changes, namespace) => {
+  if (namespace === 'sync' && changes.blacklist) {
+    console.log('黑名单已更新');
+    console.log('旧值:', changes.blacklist.oldValue);
+    console.log('新值:', changes.blacklist.newValue);
+    const shouldInitTOC = await checkAndInitTOC();
+    if (shouldInitTOC) {
+      initTOC();
+    } else {
+      // 如果在黑名单中，移除现有的目录
+      const existingToc = document.querySelector('.page-toc');
+      if (existingToc) {
+        existingToc.remove();
+  }
+    }
+  }
+  });
 function initTOC() {
   tocClosed = false; // 重置标志
-  setTimeout(async () => {
-    await createTOC();
-  }, 2000); // 保留延迟2秒创建目录，确保页面内容加载
+  createTOC(); // 直接调用 createTOC，不需要 setTimeout
     }
 
 function getVisibleText(element) {
@@ -321,9 +413,3 @@ function getVisibleText(element) {
 
   return text.trim();
 }
-
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "reinitTOC") {
-    initTOC();
-  }
-});

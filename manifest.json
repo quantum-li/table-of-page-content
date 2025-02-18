@@ -13,12 +13,20 @@
     "default_icon": "icon.png",
     "default_title": "Table of Page Content"
   },
-  "permissions": ["activeTab", "storage", "contextMenus"],
+  "permissions": [
+    "activeTab",
+    "storage",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "js": ["content.js"],
-      "css": ["styles.css"]
+      "css": ["styles.css"],
+      "run_at": "document_start"
     }
   ],
   "background": {
@@ -29,6 +37,5 @@
     "page": "options.html",
     "open_in_tab": true
   },
-  "author": "quantum",
-  "license": "MIT"
+  "author": "quantum"
 }
