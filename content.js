@@ -215,25 +215,40 @@ async function createTOC() {
       if (!isDragging && !isResizing) return;
       
       if (isResizing) {
-      const width = startWidth + (e.clientX - startX);
-      const height = startHeight + (e.clientY - startY);
+        const width = Math.max(200, startWidth + (e.clientX - startX));  // 限制最小宽度
+        const height = Math.max(100, startHeight + (e.clientY - startY)); // 限制最小高度
       
-      toc.style.width = `${width}px`;
-      toc.style.height = `${height}px`;
+        // 保存当前滚动位置
+  const content = toc.querySelector('.page-toc-content');
+        const scrollTop = content.scrollTop;
+  
+        toc.style.width = `${width}px`;
+        toc.style.height = `${height}px`;
+        
+        // 恢复滚动位置
+        content.scrollTop = scrollTop;
+        
+    adjustTocContentHeight();
       } else if (isDragging) {
         const left = startLeft + (e.clientX - startX);
         const top = startTop + (e.clientY - startY);
         
         toc.style.left = `${left}px`;
         toc.style.top = `${top}px`;
-      }
-    });
+  }
+});
     
     document.addEventListener('mouseup', () => {
       isDragging = false;
       isResizing = false;
     });
   }
+
+  // 在目录创建完成后调用
+  adjustTocContentHeight();
+
+  // 监听窗口大小变化，调整目录内容高度
+  window.addEventListener('resize', adjustTocContentHeight);
 }
 
 // 添加防抖函数
@@ -413,3 +428,30 @@ function getVisibleText(element) {
 
   return text.trim();
 }
+
+function adjustTocContentHeight() {
+  const toc = document.querySelector('.page-toc');
+  const header = toc.querySelector('.page-toc-header');
+  const content = toc.querySelector('.page-toc-content');
+  
+  if (toc && header && content) {
+    // 保存当前滚动位置
+    const scrollTop = content.scrollTop;
+    
+    const tocHeight = toc.offsetHeight;
+    const headerHeight = header.offsetHeight;
+    content.style.height = `${tocHeight - headerHeight - 20}px`; // 减去padding
+    
+    // 恢复滚动位置
+    content.scrollTop = scrollTop;
+  }
+}
+
+// 在拖拽和调整大小结束后调用此函数
+document.addEventListener('mouseup', () => {
+  if (isDragging || isResizing) {
+    isDragging = false;
+    isResizing = false;
+    adjustTocContentHeight();
+  }
+});
