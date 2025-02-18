@@ -1,5 +1,7 @@
-// 在文件最顶部添加变量声明
+// 在文件顶部添加变量声明
 let tocClosed = false;
+    let isDragging = false;
+    let isResizing = false;
 
 function waitForElement(selector, root, timeout = 2000) {
   return new Promise((resolve) => {
@@ -39,7 +41,7 @@ async function getAllHeadings(root) {
       await new Promise(resolve => {
         if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
           resolve();
-        } else {
+    } else {
           iframe.onload = resolve;
         }
       });
@@ -200,16 +202,16 @@ async function createTOC() {
     toc.addEventListener('mousedown', (e) => {
       if (e.offsetX > toc.offsetWidth - 20 && e.offsetY > toc.offsetHeight - 20) {
         isResizing = true;
-} else {
+    } else {
         isDragging = true;
-}
+  }
       startX = e.clientX;
       startY = e.clientY;
       startWidth = toc.offsetWidth;
       startHeight = toc.offsetHeight;
       startLeft = toc.offsetLeft;
       startTop = toc.offsetTop;
-    });
+  });
 
     document.addEventListener('mousemove', (e) => {
       if (!isDragging && !isResizing) return;
@@ -217,17 +219,14 @@ async function createTOC() {
       if (isResizing) {
         const width = Math.max(200, startWidth + (e.clientX - startX));  // 限制最小宽度
         const height = Math.max(100, startHeight + (e.clientY - startY)); // 限制最小高度
-      
-        // 保存当前滚动位置
+    // 保存当前滚动位置
   const content = toc.querySelector('.page-toc-content');
-        const scrollTop = content.scrollTop;
-  
+    const scrollTop = content.scrollTop;
+    
         toc.style.width = `${width}px`;
         toc.style.height = `${height}px`;
-        
-        // 恢复滚动位置
-        content.scrollTop = scrollTop;
-        
+    // 恢复滚动位置
+    content.scrollTop = scrollTop;
     adjustTocContentHeight();
       } else if (isDragging) {
         const left = startLeft + (e.clientX - startX);
