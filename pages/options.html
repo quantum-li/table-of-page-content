@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>目录生成器设置</title>
+  <link rel="stylesheet" href="../styles/options.css">
+</head>
+<body>
+  <div class="container">
+    <h1>目录生成器设置</h1>
+    
+    <div class="option-group">
+      <label for="fontSize">文字大小</label>
+      <select id="fontSize">
+        <option value="12px">小</option>
+        <option value="14px">中</option>
+        <option value="16px">大</option>
+      </select>
+    </div>
+
+    <div class="option-group">
+      <label for="theme">主题</label>
+      <select id="theme">
+        <option value="light">浅色</option>
+        <option value="dark">深色</option>
+        <option value="sepia">护眼模式</option>
+        <option value="nord">Nord</option>
+        <option value="dracula">Dracula</option>
+      </select>
+    </div>
+
+    <div class="buttons">
+      <button id="save">保存设置</button>
+      <button id="reset">重置默认</button>
+    </div>
+
+    <div id="status" class="status"></div>
+  </div>
+  <script src="../src/options.js"></script>
+</body>
+</html>

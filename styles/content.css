@@ -1,0 +1,232 @@
+/* 基础容器样式 */
+#page-toc-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 300px;
+  height: auto;
+  max-height: 80vh;
+  min-height: 45px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  z-index: 999999;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 头部样式 */
+.toc-header {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: move;
+  user-select: none;
+  flex-shrink: 0;
+  min-height: 21px;
+}
+
+.toc-title {
+  font-weight: 600;
+  color: inherit;
+}
+
+/* 控制按钮样式 */
+.toc-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.toc-icon {
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+/* 内容区域样式 */
+.toc-content {
+  padding: 12px;
+  overflow-y: auto;
+  max-height: calc(100% - 45px);
+  box-sizing: border-box;
+}
+
+.toc-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* 目录项样式 */
+.toc-item {
+  margin: 4px 0;
+}
+
+.toc-item a {
+  color: #333;
+  text-decoration: none;
+  display: block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+/* 缩进级别 */
+.level-1 { margin-left: 0; }
+.level-2 { margin-left: 16px; }
+.level-3 { margin-left: 32px; }
+.level-4 { margin-left: 48px; }
+.level-5 { margin-left: 64px; }
+.level-6 { margin-left: 80px; }
+
+/* 调整手柄样式 */
+.toc-resize-handle-left,
+.toc-resize-handle-right {
+  position: absolute;
+  bottom: 0;
+  width: 10px;
+  height: 10px;
+  cursor: sw-resize;
+}
+
+.toc-resize-handle-left {
+  left: 0;
+}
+
+.toc-resize-handle-right {
+  right: 0;
+  cursor: se-resize;
+}
+/* 空状态样式 */
+.toc-empty {
+  text-align: center;
+  color: #666;
+  padding: 20px;
+}
+
+/* 快捷控件样式 */
+.toc-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.quick-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.quick-font-size,
+.quick-theme {
+  padding: 2px 4px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+}
+
+/* 滚动条基础样式 */
+.toc-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.toc-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.toc-content::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+}
+
+/* 主题定义 */
+:root {
+  --light-bg: #ffffff;
+  --light-text: #2c3e50;
+  --light-border: #e0e0e0;
+  --dark-bg: #1a1a1a;
+  --dark-text: rgba(255, 255, 255, 0.9);
+  --dark-border: #444;
+  --nord-bg: #2e3440;
+  --nord-text: #eceff4;
+  --nord-border: #4c566a;
+  --dracula-bg: #282a36;
+  --dracula-text: #f8f8f2;
+  --dracula-border: #44475a;
+  --sepia-bg: #f4ecd8;
+  --sepia-text: #5b4636;
+  --sepia-border: #e4d5b7;
+}
+/* 主题样式 */
+.theme-light {
+  background: var(--light-bg);
+  color: var(--light-text);
+  border: 1px solid var(--light-border);
+}
+
+.theme-dark {
+  background: var(--dark-bg);
+  color: var(--dark-text);
+  border: 1px solid var(--dark-border);
+}
+
+.theme-nord {
+  background: var(--nord-bg);
+  color: var(--nord-text);
+  border: 1px solid var(--nord-border);
+}
+
+.theme-dracula {
+  background: var(--dracula-bg);
+  color: var(--dracula-text);
+  border: 1px solid var(--dracula-border);
+}
+
+.theme-sepia {
+  background: var(--sepia-bg);
+  color: var(--sepia-text);
+  border: 1px solid var(--sepia-border);
+}
+
+.theme-light .toc-header {
+  background: var(--light-bg);
+  border-bottom-color: var(--light-text);
+}
+
+
+.theme-dark .toc-header {
+  background: var(--dark-bg);
+  border-bottom-color: var(--dark-text);
+}
+
+
+.theme-nord .toc-header {
+  background: var(--nord-bg);
+  border-bottom-color: var(--nord-text);
+}
+
+
+.theme-dracula .toc-header {
+  background: var(--dracula-bg);
+  border-bottom-color: var(--dracula-text);
+}
+
+
+.theme-sepia .toc-header {
+  background: var(--sepia-bg);
+  border-bottom-color: var(--sepia-text);
+}
+
+/* 折叠状态 */
+.toc-header.collapsed .quick-controls {
+  display: none;
+}

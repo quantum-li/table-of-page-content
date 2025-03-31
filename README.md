@@ -1,34 +1,31 @@
-# Page Table of Contents Chrome Extension
+# Page TOC Generator
 
-This Chrome extension generates a table of contents for the current web page, providing an easy way to navigate through the page's headings.
+一个优雅的Chrome扩展程序，用于生成网页目录。
 
-## Features
+## 特性
 
-- Generate a table of contents for any web page
-- Draggable and resizable TOC window
-- Collapsible TOC
-- Auto-updates when page content changes
-- Compatible with iframes and micro-app tags
-- Smooth scrolling to selected headings
-- Customizable appearance
+- 自动生成页面目录
+- 可拖拽的浮动目录
+- 支持折叠/展开
+- 自定义主题
+- 响应式设计
+- 支持快捷键
 
-## Installation
+## 安装
 
-1. Clone this repository or download the ZIP file and extract it.
-2. Open Google Chrome and navigate to `chrome://extensions`.
-3. Enable "Developer mode" in the top right corner.
-4. Click "Load unpacked" and select the directory containing the extension files.
+1. 下载本仓库
+2. 打开Chrome扩展程序页面 (chrome://extensions/)
+3. 启用开发者模式
+4. 点击"加载已解压的扩展程序"
+5. 选择下载的文件夹
 
-## Usage
+## 使用方法
 
-- Click the extension icon in the Chrome toolbar to generate a table of contents for the current page.
-- Alternatively, right-click anywhere on the page and select "Generate Table of Contents" from the context menu.
-- Use the keyboard shortcut Ctrl+Shift+F (Command+Shift+F on Mac) to generate the TOC.
-
-## Customization
-
-You can customize the appearance of the TOC by modifying the `styles.css` file.
+- 点击扩展图标或右键菜单生成目录
+- 拖拽标题栏移动目录
+- 点击折叠按钮收起目录
+- 在选项页面自定义设置
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+MIT
