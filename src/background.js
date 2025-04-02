@@ -10,11 +10,17 @@ chrome.runtime.onInstalled.addListener(() => {
 // 处理右键菜单点击
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "generateTOC") {
-    chrome.tabs.sendMessage(tab.id, { action: "generateTOC" });
+    // 添加错误处理
+    chrome.tabs.sendMessage(tab.id, { action: "generateTOC" }).catch(error => {
+      console.log("页面未加载完成或不支持目录生成");
+    });
   }
 });
 
 // 处理扩展图标点击
 chrome.action.onClicked.addListener((tab) => {
-  chrome.tabs.sendMessage(tab.id, { action: "generateTOC" });
+  // 添加错误处理
+  chrome.tabs.sendMessage(tab.id, { action: "generateTOC" }).catch(error => {
+    console.log("页面未加载完成或不支持目录生成");
+  });
 });
